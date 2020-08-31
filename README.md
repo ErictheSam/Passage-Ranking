@@ -20,3 +20,12 @@ See *Final Report.pdf* for detailed description of our architecture.
 
 ## Result
 Unfortunately, due to the limitation in time and facility, the final result haven't yet been acquired.
+
+## Work division
+Yingzhuo Qian: proposed model；chose dataset; preprocessesd MS Marco data and completed entity
+recognition; implemented data loader for model; implemented KNRM and integrated all 3 models;
+composed train and eval scripts and conducted experiments; collaborated in writing project proposal,
+milestone report and final report.
+Yibo Shen: implemented local model and GAT; preprocessed OpenKE entity embeddings into graph
+structure; resized entity graph for the need of cutting memory expenses; collaborated in writing
+project proposal, milestone report and final report.

@@ -11,28 +11,27 @@ from dgl import DGLGraph
 from dgl.data import citation_graph as citegraph
 
 
-class GATLayer(nn.Module):  # GAT层相关
+class GATLayer(nn.Module): 
     def __init__(self, g, in_feat, out_feat):
         super(GATLayer, self).__init__()
-        self.g = g  # 第二个参数是graph相关的:g
-        self.W = nn.Linear(in_feat, out_feat, bias=False)  # Linear层的努力
-        self.alpha = nn.Linear(2 * out_feat, 1, bias=False)  # alpha参数
+        self.g = g  
+        self.W = nn.Linear(in_feat, out_feat, bias=False)  
+        self.alpha = nn.Linear(2 * out_feat, 1, bias=False)  
 
-    def edge_attention(self, edges):  # 边注意力
-        zz = torch.cat([edges.src['z'], edges.dst['z']], dim=1)  #
+    def edge_attention(self, edges): 
+        zz = torch.cat([edges.src['z'], edges.dst['z']], dim=1)  
         e = self.alpha(zz)  # alpha结构
-        return {'e': F.leaky_relu(e)}  #
+        return {'e': F.leaky_relu(e)}
 
-    def msg_function(self, edges):  #
-        return {'z': edges.src['z'], 'e': edges.data['e']}  #
+    def msg_function(self, edges):
+        return {'z': edges.src['z'], 'e': edges.data['e']}
 
     def reduce_function(self, nodes):
         alpha = F.softmax(nodes.mailbox['e'], dim=1)
         h = torch.sum(alpha * nodes.mailbox['z'], dim=1)
         return {'h': h}
 
-    def forward(self, input):  #
-        # print(self.W.weight)
+    def forward(self, input):
         z = self.W(input)
         self.g.ndata['z'] = z
         self.g.apply_edges(self.edge_attention)
@@ -41,8 +40,8 @@ class GATLayer(nn.Module):  # GAT层相关
 
 
 class MultiHeadLayer(nn.Module):
-    def __init__(self, g, in_feat, out_feat, head_num, merge='cat'):  # 建了一个多层的头
-        super(MultiHeadLayer, self).__init__()  # 这一切主要还
+    def __init__(self, g, in_feat, out_feat, head_num, merge='cat'): 
+        super(MultiHeadLayer, self).__init__() 
         self.merge = merge
         self.heads = nn.ModuleList()
         for i in range(head_num):
@@ -56,7 +55,7 @@ class MultiHeadLayer(nn.Module):
             return torch.mean(torch.stack(head_outs), dim=0)
 
 
-class GAT(nn.Module):  # 多层的东西
+class GAT(nn.Module):
     def __init__(self, g, in_feat, hidden_feat, out_feat, head_num):
         super(GAT, self).__init__()
         self.layer1 = MultiHeadLayer(g, in_feat, out_feat, head_num, merge="avg")
@@ -73,7 +72,7 @@ class GBT(nn.Module):
         self.device = device
         self.GAT = GAT(Get_DGL(), in_feat, hidden_feat, out_feat, head_num)
         features = np.memmap('/home/student/raw_data/entity/entity2vec4.bin', dtype='float32', mode='r')
-        self.features = torch.Tensor(features.reshape(-1, 50)).cuda()   # everywhere cuda!
+        self.features = torch.Tensor(features.reshape(-1, 50)).cuda()
 
     def forward(self, input):
         lower_layer = self.GAT(self.features)
@@ -107,7 +106,6 @@ def Get_DGL():
             key1.append(nod1)
             key2.append(nod2)
         ft.close()
-    #print(len(key1))
     c = DGLGraph()
     c.add_nodes(maximum+1)
     c.add_edges(key1,key2)

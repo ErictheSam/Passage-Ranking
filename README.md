@@ -26,6 +26,7 @@ Yingzhuo Qian: proposed model；chose dataset; preprocessesd MS Marco data and c
 recognition; implemented data loader for model; implemented KNRM and integrated all 3 models;
 composed train and eval scripts and conducted experiments; collaborated in writing project proposal,
 milestone report and final report.
+
 Yibo Shen: implemented local model and GAT; preprocessed OpenKE entity embeddings into graph
 structure; resized entity graph for the need of cutting memory expenses; collaborated in writing
 project proposal, milestone report and final report.
